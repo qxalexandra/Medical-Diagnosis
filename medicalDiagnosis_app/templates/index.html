@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.jpg') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>DiagnoseDetect</title>
+</head>
+
+<script>
+    async function getDiagnosed(){
+        window.location.href = "/SelectCondition";
+    }
+</script>
+
+
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DiagnoseDetect Logo">
+
+        <p>
+            DiagnoseDetect is an innovative online platform for rapid and accurate disease diagnosis through image uploads.
+            All you need to do is upload images of your various medical samples and our advanced AI technology swiftly analyze
+            them to provide you with accurate diagnoses. Skip the waiting rooms and lengthy appointments - DiagnoseDetect offers
+            a seamless and efficient way to identify your conditions from the comfort of your own home. Get fast, reliable
+            results and take control of your health journey with DiagnoseDetect today!
+        </p>
+
+         <button onclick="getDiagnosed()" class="button">Start Diagnosis</button>
+    </div>
+</body>
+</html>

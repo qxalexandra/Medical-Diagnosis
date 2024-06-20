@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.jpg') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>DiagnoseDetect</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1 id="diagnosisName">Get Diagnosed for <span id="categoryName"></span></h1>
+        <p>
+            <strong>Disclaimer:</strong>
+            The results provided by this service are intended solely for informational purposes and should not be
+            considered as a substitute for professional medical advice, diagnosis, or treatment. Before making any
+            decisions based on the information obtained from this service, we strongly recommend consulting a qualified
+            medical professional. This service cannot provide personalized medical advice and disclaims responsibility
+            for any consequences resulting from its use.
+        </p>
+
+        <label for="input-file">Please upload the image for diagnosis: </label>
+        <input type="file" id="input-file" accept="image/*" onchange="previewImage()">
+
+        <div id="preview-container" style="margin-top: 20px;">
+            <img id="preview" src="" alt="Image Preview" style="display:none; width: 40%">
+        </div>
+
+        <div style="margin: 5%">
+            <button class="button" onclick="getPrediction()">Get Prediction</button>
+        </div>
+        <p id="result"></p>
+        <button class="button" onclick="window.location.href='/'">Return to Homepage</button>
+        <button class="button" onclick="window.location.href='/SelectCondition/'">Select Another Diagnosis</button>
+
+
+    </div>
+
+</body>
+<script>
+    var category = new URLSearchParams(window.location.search).get('category');
+    document.getElementById('categoryName').innerText = category;
+
+    function previewImage() {
+        const file = document.getElementById('input-file').files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('preview');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+   async function getPrediction() {
+    let inputFile = document.getElementById('input-file').files[0];
+    if (!inputFile) {
+        document.getElementById('result').innerText = 'Please select a file.';
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append('file', inputFile);
+
+    let endpoint = '';
+    if (category === 'Cervical Cancer') {
+        endpoint = '/predict/cervical';
+    } else if (category === 'Ocular Diseases') {
+        endpoint = '/predict/ocular';
+    } else {
+        document.getElementById('result').innerText = 'Invalid category.';
+        return;
+    }
+
+    try {
+        let response = await fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        let resultJson = await response.json();
+        if (response.ok) {
+            document.getElementById('result').innerText = 'Based on the uploaded image, your diagnosis is: ' + resultJson.prediction;
+        } else {
+            document.getElementById('result').innerText = 'Error: ' + resultJson.error;
+        }
+    } catch (error) {
+        console.error('Error occurred during prediction:', error);
+        document.getElementById('result').innerText = 'Error occurred during prediction: ' + error.message;
+    }
+}
+
+
+</script>
+</html>
